@@ -11,6 +11,11 @@ import * as Sentry from "@sentry/node";
 
 import { sentryClerkUserMiddleware } from "./middleware/sentryClerkUser";
 import { getEnv } from "./lib/env";
+import keepAliveCron from "./lib/cron";
+
+import meRoute from "./routes/meRoute";
+import productRoute from "./routes/productRoute";
+import streamRoute from "./routes/streamRoute";
 
 const env = getEnv();
 const app = express();
@@ -29,6 +34,10 @@ app.get("/health", (_req, res) => {
 app.post("/webhooks/clerk", rawJson, (req, res) => {
   void clerkWebhookHandler(req, res);
 });
+
+app.use("/api/me", meRoute);
+app.use("/api/products", productRoute);
+app.use("/api/stream", streamRoute);
 
 const publicDir = path.join(process.cwd(), "public");
 if (fs.existsSync(publicDir)) {
@@ -65,6 +74,6 @@ app.use(
 app.listen(env.PORT, () => {
   console.log(`Server is running on: http://localhost:${env.PORT}`);
   if (env.NODE_ENV === "production") {
-    // keepAliveCron.start();
+    keepAliveCron.start();
   }
 });
