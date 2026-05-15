@@ -14,6 +14,8 @@ import { IK_PRESETS, imageKitOptimizedUrl } from "../lib/imagekitUrl";
 import { Link } from "react-router";
 import { formatPrice } from "../utils/format";
 import { Show, SignInButton } from "@clerk/react";
+import type { CartItem } from "../types/cart";
+import type { ProductSummary } from "../types/product";
 
 function CartPage() {
   const {
@@ -44,7 +46,7 @@ function CartPage() {
       ) : (
         <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
           <ul className="space-y-4">
-            {lines.map(({ line, product: p }: { line: any; product: any }) => (
+            {lines.map(({ line, product: p }: { line: CartItem; product: ProductSummary | null }) => (
               <li
                 key={line.productId}
                 className="card card-side border border-base-300 bg-base-100 shadow-sm"
@@ -75,7 +77,7 @@ function CartPage() {
                     </div>
                     {p ? (
                       <p className="text-sm text-base-content/60">
-                        {formatPrice(p.priceCents, p.currency)} each
+                        {formatPrice(p.priceCents, p.currency ?? undefined)} each
                       </p>
                     ) : null}
                     <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -117,7 +119,9 @@ function CartPage() {
                     </div>
                   </div>
                   <div className="text-right font-semibold text-base-content">
-                    {p ? formatPrice(p.priceCents * line.quantity, p.currency) : "-"}
+                    {p
+                      ? formatPrice(p.priceCents * line.quantity, p.currency ?? undefined)
+                      : "-"}
                   </div>
                 </div>
               </li>
