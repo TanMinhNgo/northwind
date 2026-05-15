@@ -4,15 +4,16 @@ import { useCart } from "../store/cart";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "../lib/api";
 import { useState } from "react";
+import type { CartItem } from "../types/cart";
+import type { ProductSummary } from "../types/product";
 
 export default function useCartPage() {
   const { getToken } = useAuth();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
-  type Product = { id: string; priceCents: number };
 
   const items = useCart((s) => s.items);
-  const setQty = useCart((s: any) => s.setQty);
-  const removeItem = useCart((s: any) => s.removeItem);
+  const setQty = useCart((s) => s.setQty);
+  const removeItem = useCart((s) => s.removeItem);
 
   const {
     data,
@@ -24,9 +25,9 @@ export default function useCartPage() {
     enabled: items.length > 0,
   });
 
-  const products: Product[] = data?.products ?? [];
-  const byId = new Map<string, Product>(products.map((p) => [p.id, p]));
-  const lines = items.map((line: { productId: string; quantity: number }) => ({
+  const products: ProductSummary[] = data?.products ?? [];
+  const byId = new Map<string, ProductSummary>(products.map((p) => [p.id, p]));
+  const lines = items.map((line: CartItem) => ({
     line,
     product: byId.get(line.productId) ?? null,
   }));
