@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { clerkMiddleware } from "@clerk/express";
 import { clerkWebhookHandler } from "./webhooks/clerk";
+import { polarWebhookHandler } from "./webhooks/polar";
 
 import path from "path";
 import fs from "fs";
@@ -16,6 +17,9 @@ import keepAliveCron from "./lib/cron";
 import meRoute from "./routes/meRoute";
 import productRoute from "./routes/productRoute";
 import streamRoute from "./routes/streamRoute";
+import checkoutRoute from "./routes/checkoutRoute";
+import adminRoute from "./routes/adminRoute";
+import orderRoute from "./routes/orderRoute";
 
 const env = getEnv();
 const app = express();
@@ -35,9 +39,16 @@ app.post("/webhooks/clerk", rawJson, (req, res) => {
   void clerkWebhookHandler(req, res);
 });
 
+app.post("/webhooks/polar", rawJson, (req, res) => {
+  void polarWebhookHandler(req, res);
+});
+
 app.use("/api/me", meRoute);
 app.use("/api/products", productRoute);
 app.use("/api/stream", streamRoute);
+app.use("/api/checkout", checkoutRoute);
+app.use("/api/admin", adminRoute);
+app.use("/api/orders", orderRoute);
 
 const publicDir = path.join(process.cwd(), "public");
 if (fs.existsSync(publicDir)) {
