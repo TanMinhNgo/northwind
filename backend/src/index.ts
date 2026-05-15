@@ -22,10 +22,6 @@ app.use(cors());
 app.use(clerkMiddleware());
 app.use(sentryClerkUserMiddleware);
 
-app.get("/", (_req, res) => {
-  res.send("Hello World!");
-});
-
 app.get("/health", (_req, res) => {
   res.json({ status: "OK" });
 });
